@@ -1,84 +1,73 @@
-import { step } from 'allure-js-commons';
-import { expect } from '@playwright/test';
+import { testCases } from "../../testData";
+import { step } from "allure-js-commons";
+import { expect } from "@playwright/test";
 
 export default class ProjectPage {
-    constructor(page) {
-        this.page = page;
-        this.draftprojectbrieft = this.page.getByText('Draft project brief', { exact: true });
-        this.schedulekickoffmeeting = this.page.getByText('Schedule kickoff meeting');
-        this.sharetimelinewithteammates = this.page.getByText('Share timeline with teammates');
-        
-        this.verifyToDocolumn = this.page.getByRole('link', { name: 'Cross-functional project plan, Project To do' });
-        
-        this.tagNonpriority = this.page.getByLabel('Priority Non-Priority');
-        this.tagOntrack = this.page.getByLabel('Status On track');
-        this.tagHigh = this.page.getByLabel('Priority High');
-        this.tagOfftrack = this.page.getByLabel('Status Off track');
-        this.tagMedium = this.page.getByLabel('Priority Medium');
-        this.tagAtrisk = this.page.getByLabel('Status At risk');
-        
-               
+  constructor(page) {
+    this.page = page;
+    this.taskLocators = {};
+    this.columnLocators = {};
+    this.tagLocators = {};
+    for (const testCase of testCases) {
+      this.taskLocators[testCase.taskName] = this.page.getByText(
+        testCase.taskName,
+      );
+      if (testCase.verifycolumn) {
+        this.columnLocators[testCase.verifycolumn] = this.page.getByRole(
+          "link",
+          { name: testCase.verifycolumn },
+        );
+      }
+      if (Array.isArray(testCase.tags)) {
+        for (const tag of testCase.tags) {
+          if (!this.tagLocators[tag]) {
+            this.tagLocators[tag] = this.page.getByText(tag);
+          }
+        }
+      }
     }
+  }
 
-    async clickDraftproject(email) {
-        await step('Open "Draft project brief', async () => {
-            await this.draftprojectbrieft.click();
-        });
+  getColumnLocator(verifycolumn) {
+    const columnLocator = this.columnLocators[verifycolumn];
+    if (!columnLocator) {
+      throw new Error(`No locator found for column: ${verifycolumn}`);
     }
+    return columnLocator;
+  }
 
-    async clickSchedulekickoff(email) {
-        await step('Schedule kickoff meeting', async () => {
-            await this.schedulekickoffmeeting.click();
-        });
-    }
+  async clickTask(taskName) {
+    await step(`Click on "${taskName}"`, async () => {
+      const taskLocator = this.taskLocators[taskName];
+      const count = await taskLocator.count();
+      if (count > 1) {
+        console.warn(
+          `Multiple (${count}) elements found for task "${taskName}". Clicking the first one.`,
+        );
+      }
+      await taskLocator.first().click();
+      await this.page.waitForLoadState("networkidle", { timeout: 20000 });
+    });
+  }
 
-    async clickSharetimeline() {
-        await step('Share timeline with teammates', async () => {
-            await this.sharetimelinewithteammates.click();
-        });
-    }
+  async verifyColumn(verifycolumn) {
+    await step(`Verify column "${verifycolumn}"`, async () => {
+      await expect(columnLocator).toBeVisible();
+    });
+  }
 
-    async clickLogin() {
-        await step('Click on "Log in" button.', async () => {
-            await this.loginButton.click();
-        });
-    }
-
-    async verifyTagNonpriority() {
-        await step('Verify Tag', async () => {
-         await this.tagNonpriority.waitFor({ state: 'visible', timeout: 10000 });
-             await expect(this.tagNonpriority).toBeVisible();
-        });
-    }
-    
-    async verifyTagOntrack() {
-        await step('Verify Tag', async () => {
-         await this.tagOntrack.waitFor({ state: 'visible', timeout: 10000 });
-            await expect(this.tagOntrack).toBeVisible();
-        });
-    }
-    async verifyTagHigh() {
-        await step('Verify Tag', async () => {
-         await this.tagHigh.waitFor({ state: 'visible', timeout: 10000 });
-            await expect(this.tagHigh).toBeVisible();
-        });
-    }
-    async verifyTagOfftrack() {
-        await this.tagOfftrack.waitFor({ state: 'visible', timeout: 10000 });
-        await step('Verify Tag', async () => {
-            await expect(this.tagOfftrack).toBeVisible();
-        });
-    }
-    async verifyTagMedium() {
-        await this.tagMedium.waitFor({ state: 'visible', timeout: 10000 });
-        await step('Verify Tag', async () => {
-            await expect(this.tagMedium).toBeVisible();
-        });
-    }
-    async verifyTagAtrisk() {
-        await this.tagAtrisk.waitFor({ state: 'visible', timeout: 10000 });
-        await step('Verify Tag', async () => {
-            await expect(this.tagAtrisk).toBeVisible();
-        });
-    }
+  async verifyTag(tags) {
+    await step(`Verify tag "${tags}"`, async () => {
+      const tagLocator = this.tagLocators[tags];
+      const count = await tagLocator.count();
+      if (count === 0) {
+        throw new Error(`Tag "${tags}" not found`);
+      } else if (count > 1) {
+        console.warn(
+          `Multiple (${count}) elements found for tag "${tags}". Verifying the first one.`,
+        );
+      }
+      await expect(tagLocator.first()).toBeVisible();
+    });
+  }
 }

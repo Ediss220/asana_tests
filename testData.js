@@ -1,9 +1,62 @@
-
-    export const URL_ENDPOINT = {
-        login: '/-/login',
-        mainpage: '/0/home/1205366998147150',
-        Project: '/0/1205367008165973/1205366758273574',
-        WorkRequests: '/0/1205367008167110/1205367578167113',
-        
-    };
-
+export const URL_ENDPOINT = {
+  login: "/-/login",
+  mainpage: "/0/home/1205366998147150",
+  Project: "/0/1205367008165973/1205366758273574",
+  WorkRequests: "/0/1205367008167110/1205367578167113",
+};
+export const testCases = [
+  {
+    id: "TC_01",
+    name: 'Verify Draft project brief task is in the "To do" column and tags',
+    project: "Cross-functional project plan",
+    taskName: "Draft project brief",
+    column: "To do",
+    verifycolumn: "Cross-functional project plan, Project To do",
+    tags: ["Non-priority", "On track"],
+  },
+  {
+    id: "TC_02",
+    name: 'Verify "Schedule kickoff meeting" is in the "To do" column and tags.',
+    project: "Cross-functional project plan",
+    taskName: "Schedule kickoff meeting",
+    column: "To do",
+    verifycolumn: "Cross-functional project plan, Project To do",
+    tags: ["Medium", "At risk"],
+  },
+  {
+    id: "TC_03",
+    name: 'Verify "Share timeline with teammates" column and tags.',
+    project: "Cross-functional project plan",
+    taskName: "Share timeline with teammates",
+    column: "To do",
+    verifycolumn: "Cross-functional project plan, Project To do",
+    tags: ["High", "Off track"],
+  },
+  {
+    id: "TC_04",
+    name: "Verify Laptop setup task in New Requests",
+    project: "Work Requests",
+    taskName: "[Example] Laptop setup for",
+    column: "New Requests",
+    verifycolumn: "Work Requests New Requests",
+    tags: ["Medium priority", "Low effort", "New hardware", "Not Started"],
+  },
+  {
+    id: "TC_05",
+    name: "Verify Password not working task in In Progress",
+    project: "Work Requests",
+    taskName: "[Example] Password not working",
+    column: "In Progress",
+    verifycolumn: "Work Requests In Progress",
+    tags: ["Low effort", "Low priority", "Password reset", "Waiting"],
+  },
+  {
+    id: "TC_06",
+    name: "Verify New keycard task in Completed",
+    project: "Work Requests",
+    taskName: "[Example] New keycard for",
+    column: "Completed",
+    verifycolumn: "Work Requests Completed",
+    tags: ["Low effort", "New hardware", "High Priority", "Done"],
+  },
+];

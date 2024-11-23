@@ -9,7 +9,8 @@
     "test:webkit": "npx playwright test --project webkit",
     "testUI:chrome": "npx playwright test --ui --project chromium",
     "report-create": "allure generate allure-results -o allure-report --clean",
-    "report-open": "npm run report-create && allure open allure-report"
+    "report-open": "npm run report-create && allure open allure-report",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -20,5 +21,5 @@
     "@types/node": "^22.9.0",
     "allure-playwright": "^3.0.4",
     "dotenv": "^16.4.5"
-     }
+  }
 }
